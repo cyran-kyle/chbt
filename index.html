@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat Bot</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+   
+   .chat-container {
+    max-width: 400px;
+    margin: 100vh auto; 
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    overflow: hidden;
+}
+
+
+    .chat-messages {
+        padding: 10px;
+        max-height: 300px;
+        overflow-y: scroll;
+    }
+
+    .chat-message {
+        padding: 10px;
+        border-radius: 10px;
+        clear: both;
+        margin-bottom: 10px;
+        display: inline-block;
+        max-width: 70%;
+    }
+
+    .user-message {
+        float: right;
+        background-color: #dcf8c6;
+        text-align: right;
+    }
+
+    .bot-message {
+        float: left;
+        background-color: #e1f7d5;
+        text-align: left;
+    }
+    .input-container {
+    padding: 40px 10px 20px; 
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #ddd;
+   }
+    input[type="text"] {
+        flex: 1;
+        padding: 10px;
+        box-sizing: border-box;
+        border: none;
+        border-radius: 5px;
+        font-size: 13px;
+    }
+
+    .send-button {
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .send-button:hover {
+        background-color: #45a049;
+    }
+</style>
+</head>
+<body>
+<div class="chat-container">
+    <div class="chat-messages" id="chat-box"></div>
+    <div class="input-container">
+        <input type="text" id="user-input" placeholder="Type your message here..." autofocus>
+        <button class="send-button" id="send-button">Send</button>
+    </div>
+</div>
+
+<script>
+    let msg = {
+  "messages": [
+    { "body": "hi", "text": "Hello there!" },
+    { "body": "hello", "text": "Hey! How are you?" },
+    { "body": "hey there", "text": "Hi! What's up?" },
+    { "body": "howdy", "text": "Howdy partner!" },
+    { "body": "good morning", "text": "Good morning! Have a great day!" },
+    { "body": "good afternoon", "text": "Good afternoon! How can I assist you?" },
+    { "body": "good evening", "text": "Good evening! How was your day?" },
+    { "body": "what's up", "text": "Not much, just chilling. You?" },
+    { "body": "how's it going", "text": "It's going well, thanks! How about you?" },
+    { "body": "long time no see", "text": "Indeed! It's been a while. How have you been?" },
+    { "body": "how are you", "text": "I'm doing well, thank you for asking!" },
+    { "body": "what's new", "text": "Not much, just the usual. How about you?" },
+    { "body": "nice to meet you", "text": "Nice to meet you too! How can I help?" },
+    { "body": "see you later", "text": "Sure thing! Talk to you later!" },
+    { "body": "take care", "text": "You too! Take care!" },
+    { "body": "have a great day", "text": "Thanks, you too! Have a great day!" },
+    { "body": "happy to see you", "text": "Likewise! How have you been?" },
+    { "body": "it's been a while", "text": "Yes, it has! What have you been up to?" },
+    { "body": "what's happening", "text": "Not much, just hanging out. You?" },
+    { "body": "catch you later", "text": "Sure thing! Talk to you later!" },
+    { "body": "how's everything", "text": "Everything's going well, thank you for asking!" },
+    { "body": "how's your day", "text": "It's been good, thanks for asking! How about you?" },
+    { "body": "what's going on", "text": "Not much, just relaxing. You?" },
+    { "body": "nice weather today", "text": "Yeah, it's lovely outside! Perfect day for a walk!" },
+    { "body": "what's the plan", "text": "No plans yet. What about you?" },
+    { "body": "hope you're well", "text": "Thank you! I'm doing well. How about you?" },
+    { "body": "what's the news", "text": "Nothing much, just the usual. How about you?" },
+    { "body": "missed you", "text": "Aw, I missed you too! How have you been?" },
+    { "body": "great to see you", "text": "Likewise! How's everything going?" },
+    { "body": "how's life", "text": "Life's good, thanks for asking! How about you?" },
+    { "body": "what's cooking", "text": "Not much, just relaxing. You?" },
+    { "body": "what's the deal", "text": "Not much, just chilling. You?" },
+    { "body": "what's the story", "text": "Not much, just hanging out. You?" },
+    { "body": "what's cracking", "text": "Not much, just chilling. You?" },
+    { "body": "how's work", "text": "Work's good, thanks for asking! How about you?" },
+    { "body": "how's school", "text": "School's going well, thanks! How about you?" },
+    { "body": "what's your name", "text": "My name is ChatGPT. How can I assist you?" },
+    { "body": "how old are you", "text": "I'm a machine learning model, so I don't have an age!" },
+    { "body": "where are you from", "text": "I exist in the digital realm! Where are you from?" },
+    { "body": "what do you do", "text": "I'm here to assist you with any questions or tasks you have!" },
+    { "body": "tell me a joke", "text": "Why don't scientists trust atoms? Because they make up everything!" },
+    { "body": "what's your favorite color", "text": "I don't have a favorite color, but I like all colors equally!" },
+    { "body": "what's your favorite food", "text": "As a machine learning model, I don't eat, but I'd say data bytes are my favorite!" },
+    { "body": "tell me a story", "text": "Once upon a time, in a faraway land, there was a kingdom..." },
+    { "body": "how can I help you", "text": "You can ask me anything or tell me what you need assistance with!" },
+    { "body": "what are you up to", "text": "Just here, waiting to assist you! What about you?" },
+    { "body": "what's on your mind", "text": "Not much, just waiting for your questions or requests!" },
+    { "body": "are you busy", "text": "Not at all! I'm here to assist you whenever you need!" },
+    { "body": "what's your hobby", "text": "As an AI, I don't have hobbies, but I enjoy helping people!" },
+    { "body": "what's your favorite book", "text": "I don't have a favorite book, but I can recommend some if you'd like!" },
+    { "body": "what's your favorite movie", "text": "I don't watch movies, but I can help you find one to watch!" },
+    { "body": "what's your favorite song", "text": "I don't have a favorite song, but I can suggest some if you'd like!" },
+    { "body": "what's your favorite animal", "text": "I don't have preferences, but all animals are fascinating!" },
+    { "body": "what's the weather like", "text": "The weather is [current weather condition]." },
+    { "body": "how's the day going", "text": "The day is going well, thanks for asking! How about yours?" },
+    { "body": "what's your favorite sport", "text": "I don't have a favorite sport, but I can discuss sports with you!" },
+    { "body": "what's your favorite subject", "text": "As an AI, I don't have preferences, but I can discuss various subjects with you!" },
+    { "body": "what's your favorite hobby", "text": "I don't have a favorite hobby, but I enjoy learning and helping people!" },
+    { "body": "what's your favorite place", "text": "As an AI, I don't have preferences, but I can help you discover interesting places!" },
+    { "body": "what's your favorite game", "text": "I don't play games, but I can discuss games with you!" },
+    { "body": "what's your favorite website", "text": "I don't have preferences, but I can help you find useful websites!" },
+    { "body": "what's your favorite app", "text": "I don't have preferences, but I can recommend useful apps!" },
+    { "body": "what's your favorite technology", "text": "As an AI, I don't have preferences, but I can discuss various technologies with you!" },
+    { "body": "what's your favorite programming language", "text": "As an AI, I don't have preferences, but I can discuss various programming languages with you!" },
+    { "body": "what's your favorite movie genre", "text": "I don't watch movies, but I can discuss movie genres with you!" },
+    { "body": "what's your favorite TV show", "text": "I don't watch TV shows, but I can discuss TV shows with you!" },
+    { "body": "what's your favorite holiday", "text": "I don't have preferences, but I can discuss holidays with you!" },
+    { "body": "what's your favorite season", "text": "I don't have preferences, but I can discuss seasons with you!" },
+    { "body": "what's your favorite dessert", "text": "As an AI, I don't eat desserts, but I can discuss desserts with you!" },
+    { "body": "what's your favorite drink", "text": "As an AI, I don't drink, but I can discuss drinks with you!" },
+    { "body": "what's your favorite fruit", "text": "I don't have preferences, but I can discuss fruits with you!" },
+    { "body": "what's your favorite vegetable", "text": "I don't have preferences, but I can discuss vegetables with you!" },
+    { "body": "what's your favorite snack", "text": "As an AI, I don't eat snacks, but I can discuss snacks with you!" },
+    { "body": "what's your favorite cuisine", "text": "I don't have preferences, but I can discuss cuisines with you!" },
+    { "body": "what's your favorite country", "text": "I don't have preferences, but I can discuss countries with you!" },
+    { "body": "what's your favorite continent", "text": "I don't have preferences, but I can discuss continents with you!" },
+    { "body": "what's your favorite language", "text": "As an AI, I can understand and communicate in multiple languages, but I don't have preferences!" },
+    { "body": "what's your favorite word", "text": "I don't have a favorite word, but I can discuss words with you!" }
+  ]
+};
+
+
+    document.getElementById("send-button").addEventListener("click", function() {
+        sendMessage();
+    });
+
+    document.getElementById("user-input").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    });
+
+    function sendMessage() {
+        let userInput = document.getElementById("user-input").value.toLowerCase().trim();
+        let chatBox = document.getElementById("chat-box");
+
+
+        let response = "";
+        for (let i = 0; i < msg.messages.length; i++) {
+            if (msg.messages[i].body === userInput) {
+                response = msg.messages[i].text;
+                break;
+            }
+        }
+
+
+        let userMessage = document.createElement("div");
+        userMessage.className = "chat-message user-message";
+        userMessage.textContent = userInput;
+        chatBox.appendChild(userMessage);
+
+
+        if (response !== "") {
+            let botMessage = document.createElement("div");
+            botMessage.className = "chat-message bot-message";
+            botMessage.textContent = response;
+            chatBox.appendChild(botMessage);
+        } else {
+            let botMessage = document.createElement("div");
+            botMessage.className = "chat-message bot-message";
+            botMessage.textContent = "Sorry, I didn't understand that.";
+            chatBox.appendChild(botMessage);
+        }
+
+        document.getElementById("user-input").value = "";
+
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+</body>
+</html>
